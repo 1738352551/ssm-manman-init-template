@@ -7,11 +7,11 @@
 3. mybatis √
 4. knife4 + swagger √
 5. spring security
-6. logback日志
+6. logback日志  √
 7. 全局异常处理器 √
 8. 通用响应类 √
-9. redis
+9. redis  √
 ## 三、 业务功能
-1. 用户管理
-2. 角色管理
-3. 菜单管理
+1. 用户管理  √
+2. 角色管理  √
+3. 菜单管理  √
