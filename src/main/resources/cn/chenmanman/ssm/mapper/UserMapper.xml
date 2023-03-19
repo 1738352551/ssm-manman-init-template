@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.chenmanman.ssm.mapper.UserMapper">
+
+    <sql id="baseUserSelectSql">
+        select id, username, password, gender, email, avatar, create_time, create_by, update_time, update_by, status, del_flag  from man_user
+    </sql>
+
+    <insert id="insertUser">
+        insert into man_user(
+            <if test="username!=null and username!=''">
+                username,
+            </if>
+            <if test="password!=null and password!=''">
+                password,
+            </if>
+            <if test="avatar!=null and avatar!=''">
+                avatar,
+            </if>
+            <if test="gender!=null">
+                gender,
+            </if>
+            <if test="email!=null and email!=''">
+                email,
+            </if>
+            <if test="status!=null">
+                status,
+            </if>
+                create_time
+        )
+        values (
+            <if test="username!=null and username!=''">
+                #{username},
+            </if>
+            <if test="password!=null and password!=''">
+                #{password},
+            </if>
+            <if test="avatar!=null and avatar!=''">
+                #{avatar},
+            </if>
+            <if test="gender!=null">
+                #{gender},
+            </if>
+            <if test="email!=null and email!=''">
+                #{email},
+            </if>
+            <if test="status!=null">
+                #{status},
+            </if>
+                sysdate()
+        )
+    </insert>
+
+    <update id="updateUser">
+        update man_user
+        <set>
+            <if test="username!=null and username!=''">
+                username = #{username},
+            </if>
+            <if test="avatar!=null and avatar!=''">
+                avatar = #{avatar},
+            </if>
+            <if test="gender!=null">
+                gender = #{gender},
+            </if>
+            <if test="email!=null and email!=''">
+                email = #{email},
+            </if>
+            <if test="status!=null">
+                status = #{status},
+            </if>
+            update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserByIds">
+        update man_user set del_flag = 1 where id in
+        <foreach collection="list" item="id" index="i" separator="," close=")" open="(">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectUserAll" resultType="User">
+        <include refid="baseUserSelectSql"/>
+    </select>
+
+    <select id="selectUserById" resultType="User">
+        <include refid="baseUserSelectSql"/>
+        where id = #{id} and del_flag = 0
+    </select>
+    <select id="selectUserByUsername" resultType="User">
+        <include refid="baseUserSelectSql"/>
+        where username = #{username} and del_flag = 0
+    </select>
+
+    <select id="selectUserList" resultType="User">
+        <include refid="baseUserSelectSql"/>
+        <where>
+            del_flag = 0
+            <if test="username!=null and username!=''">
+                AND username like concat('%', #{username}, '%')
+            </if>
+            <if test="gender!=null">
+                AND gender = #{gender}
+            </if>
+            <if test="email!=null and email!=''">
+                AND email like concat('%', #{email},'%')
+            </if>
+            <if test="status!=null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+</mapper>

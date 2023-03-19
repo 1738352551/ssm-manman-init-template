@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.chenmanman.ssm.mapper.RoleMapper">
+
+    <sql id="baseRoleSelectSql">
+        select id, name, create_time, create_by, update_time, update_by, status from man_role
+    </sql>
+
+    <insert id="insertRole">
+        insert into man_role(name, create_time) values(#{name}, sysdate())
+    </insert>
+
+    <update id="updateRole">
+        UPDATE man_role
+        <set>
+            <if test="name!=null and name!=''">
+                name = #{name},
+            </if>
+            <if test="status!=null">
+                status = #{status},
+            </if>
+            update_time = sysdate()
+        </set>
+
+    </update>
+
+    <delete id="deleteRoleByIds">
+        UPDATE man_role set del_flag = 1
+        <where>
+            id in
+            <foreach collection="list" open="(" close=")" separator="," index="id_index" item="id">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+
+    <select id="selectRoleList" resultType="Role">
+        <include refid="baseRoleSelectSql"/>
+        <where>
+            del_flag = 0
+            <if test="name!=null and name!=''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="status!=null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectRoleById" resultType="Role">
+        <include refid="baseRoleSelectSql"/>
+        where del_flag = 0 and id = #{id}
+    </select>
+    <select id="selectRoleAll" resultType="Role">
+        <include refid="baseRoleSelectSql"/>
+    </select>
+
+
+    <sql id="userRoleAssociationSql">
+        select r.id, r.name, r.create_time, r.create_by, r.update_time, r.update_by, r.status, r.del_flag  from man_role r
+                                                    left join user_role ur on r.id = ur.role_id
+                                                    left join man_user u on u.id = ur.user_id
+    </sql>
+
+
+    <select id="selectRolePermissionByUserId" resultType="cn.chenmanman.ssm.model.entity.Role">
+        <include refid="userRoleAssociationSql"/>
+        where u.id = #{userId} and u.del_flag = 0
+    </select>
+    <select id="selectRolesByUserName" resultType="cn.chenmanman.ssm.model.entity.Role">
+        <include refid="userRoleAssociationSql"/>
+        where u.username = #{username} and u.del_flag = 0
+    </select>
+
+
+</mapper>

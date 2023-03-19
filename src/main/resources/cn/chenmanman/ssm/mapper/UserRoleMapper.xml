@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.chenmanman.ssm.mapper.UserRoleMapper">
+    <insert id="batchUserRole">
+        insert into user_role(user_id, role_id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.userId},#{item.roleId})
+        </foreach>
+    </insert>
+
+
+    <delete id="deleteUserRoleByUserId">
+        delete from user_role where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteUserRole">
+        delete from user_role where user_id in
+        <foreach collection="list" open="(" close=")" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteUserRoleInfo">
+        delete from user_role where user_id=#{userId} and role_id=#{roleId}
+    </delete>
+
+    <delete id="deleteUserRoleInfos">
+        delete from user_role where role_id=#{roleId} and user_id in
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+    <select id="countUserRoleByRoleId" resultType="java.lang.Integer">
+        select count(1) from user_role where role_id=#{roleId}
+    </select>
+</mapper>
